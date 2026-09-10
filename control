@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTROLE DE LOTE</title>
+    <style>
+        :root {
+            --vermelho-principal: #C62828;
+            --vermelho-escuro: #8E0000;
+            --vermelho-claro: #EF5350;
+            --branco: #FFFFFF;
+            --cinza-muito-claro: #F5F5F5;
+            --cinza-secundario: #666666;
+            --cinza-escuro: #222222;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--cinza-muito-claro);
+            color: var(--cinza-escuro);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--vermelho-principal);
+            color: var(--branco);
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+        }
+
+        .btn-fullscreen {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--branco);
+            border: 2px solid var(--branco);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-fullscreen:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .btn-fullscreen:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .top-grid {
+                grid-template-columns: 1fr;
+            }
+            header h1 {
+                font-size: 1.5rem;
+            }
+            .btn-fullscreen {
+                position: static;
+                transform: none;
+                margin-top: 12px;
+                display: inline-block;
+                width: 100%;
+            }
+        }
+
+        .card {
+            background-color: var(--branco);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            border-top: 6px solid var(--vermelho-principal);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--cinza-secundario);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+        }
+
+        /* Lote Card Specifics */
+        .lote-display-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .lote-value-box {
+            background-color: var(--cinza-muito-claro);
+            border: 2px dashed var(--vermelho-claro);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--vermelho-escuro);
+            letter-spacing: 1px;
+            flex: 1;
+            text-align: center;
+            word-break: break-all;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-action {
+            background-color: var(--vermelho-principal);
+            color: var(--branco);
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 10px rgba(198, 40, 40, 0.3);
+            white-space: nowrap;
+        }
+
+        .btn-action:hover {
+            background-color: var(--vermelho-escuro);
+        }
+
+        .btn-action:active {
+            transform: scale(0.97);
+        }
+
+        /* Input mode for editing lote */
+        .lote-input-area {
+            display: none;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .lote-input {
+            flex: 1;
+            padding: 16px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            border: 2px solid var(--vermelho-principal);
+            border-radius: 12px;
+            outline: none;
+            text-align: center;
+            background-color: var(--branco);
+            color: var(--cinza-escuro);
+            text-transform: uppercase;
+        }
+
+        /* Date Reference Card */
+        .date-box {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--cinza-escuro);
+            text-align: center;
+            padding: 12px 0;
+            letter-spacing: 1px;
+        }
+
+        /* Vencimentos Section */
+        .section-header {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--cinza-escuro);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header::after {
+            content: "";
+            flex: 1;
+            height: 3px;
+            background-color: var(--vermelho-claro);
+            border-radius: 2px;
+        }
+
+        .vencimentos-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .vencimentos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .vencimento-card {
+            background-color: var(--branco);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            border-left: 8px solid var(--vermelho-principal);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vencimento-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(239, 83, 80, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 0 0 0 100%;
+        }
+
+        .vencimento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .vencimento-dias {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--vermelho-principal);
+            letter-spacing: 0.5px;
+        }
+
+        .vencimento-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            background-color: var(--cinza-muito-claro);
+            color: var(--cinza-secundario);
+            padding: 4px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .vencimento-data {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--cinza-escuro);
+            letter-spacing: 1px;
+        }
+
+        /* Footer Status */
+        footer {
+            background-color: var(--branco);
+            border-top: 1px solid #E0E0E0;
+            padding: 16px 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.9rem;
+            color: var(--cinza-secundario);
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #2E7D32;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #2E7D32;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(46, 125, 50, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>CONTROLE DE LOTE</h1>
+        <p>PAINEL DE VENCIMENTOS</p>
+        <button class="btn-fullscreen" id="btnFullscreen">TELA CHEIA</button>
+    </header>
+
+    <main>
+        <!-- Top Info: Lote & Data Atual -->
+        <div class="top-grid">
+            <!-- Card Lote -->
+            <section class="card">
+                <div class="card-title">Lote</div>
+                <div id="loteDisplayArea" class="lote-display-area">
+                    <div id="loteValue" class="lote-value-box">000</div>
+                    <button id="btnAlterar" class="btn-action">ALTERAR LOTE</button>
+                </div>
+                <div id="loteInputArea" class="lote-input-area">
+                    <input type="text" id="loteInput" class="lote-input" placeholder="DIGITE O LOTE" autocomplete="off">
+                    <button id="btnSalvar" class="btn-action">SALVAR</button>
+                </div>
+            </section>
+
+            <!-- Card Data de Referência -->
+            <section class="card">
+                <div class="card-title">Data de Referência (Hoje)</div>
+                <div id="dataHoje" class="date-box">--/--/----</div>
+            </section>
+        </div>
+
+        <!-- Seção de Vencimentos -->
+        <div class="section-header">Vencimentos</div>
+
+        <div class="vencimentos-grid">
+            <!-- 21 Dias -->
+            <div class="vencimento-card">
+                <div class="vencimento-header">
+                    <span class="vencimento-dias">21 DIAS</span>
+                    <span class="vencimento-tag">FUTURO</span>
+                </div>
+                <div id="venc21" class="vencimento-data">--/--/----</div>
+            </div>
+
+            <!-- 30 Dias -->
+            <div class="vencimento-card">
+                <div class="vencimento-header">
+                    <span class="vencimento-dias">30 DIAS</span>
+                    <span class="vencimento-tag">FUTURO</span>
+                </div>
+                <div id="venc30" class="vencimento-data">--/--/----</div>
+            </div>
+
+            <!-- 15 Dias -->
+            <div class="vencimento-card">
+                <div class="vencimento-header">
+                    <span class="vencimento-dias">15 DIAS</span>
+                    <span class="vencimento-tag">FUTURO</span>
+                </div>
+                <div id="venc15" class="vencimento-data">--/--/----</div>
+            </div>
+
+            <!-- 11 Dias -->
+            <div class="vencimento-card">
+                <div class="vencimento-header">
+                    <span class="vencimento-dias">11 DIAS</span>
+                    <span class="vencimento-tag">FUTURO</span>
+                </div>
+                <div id="venc11" class="vencimento-data">--/--/----</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span>SISTEMA ATUALIZADO</span>
+        </div>
+        <span>|</span>
+        <span id="ultimaAtualizacao">Última atualização: --:--:--</span>
+    </footer>
+
+    <script>
+        // Elementos DOM
+        const loteValue = document.getElementById('loteValue');
+        const loteDisplayArea = document.getElementById('loteDisplayArea');
+        const loteInputArea = document.getElementById('loteInputArea');
+        const loteInput = document.getElementById('loteInput');
+        const btnAlterar = document.getElementById('btnAlterar');
+        const btnSalvar = document.getElementById('btnSalvar');
+        
+        const dataHojeEl = document.getElementById('dataHoje');
+        const venc21El = document.getElementById('venc21');
+        const venc30El = document.getElementById('venc30');
+        const venc15El = document.getElementById('venc15');
+        const venc11El = document.getElementById('venc11');
+        const ultimaAtualizacaoEl = document.getElementById('ultimaAtualizacao');
+        const btnFullscreen = document.getElementById('btnFullscreen');
+
+        // Chave do localStorage
+        const STORAGE_KEY = 'controle_lote_numero';
+
+        // Carregar lote salvo
+        function carregarLote() {
+            const loteSalvo = localStorage.getItem(STORAGE_KEY);
+            if (loteSalvo && loteSalvo.trim() !== '') {
+                loteValue.textContent = loteSalvo.toUpperCase();
+            } else {
+                loteValue.textContent = '000';
+            }
+        }
+
+        // Alternar para modo de edição
+        btnAlterar.addEventListener('click', () => {
+            const atual = loteValue.textContent;
+            loteInput.value = atual === '000' ? '' : atual;
+            loteDisplayArea.style.display = 'none';
+            loteInputArea.style.display = 'flex';
+            loteInput.focus();
+            loteInput.select();
+        });
+
+        // Salvar lote
+        function salvarLote() {
+            let novoLote = loteInput.value.trim();
+            if (novoLote === '') {
+                novoLote = '000';
+            }
+            localStorage.setItem(STORAGE_KEY, novoLote);
+            loteValue.textContent = novoLote.toUpperCase();
+            loteInputArea.style.display = 'none';
+            loteDisplayArea.style.display = 'flex';
+        }
+
+        btnSalvar.addEventListener('click', salvarLote);
+
+        loteInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                salvarLote();
+            }
+        });
+
+        // Formatação de data para o padrão brasileiro DD/MM/AAAA
+        function formatarData(data) {
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        // Adicionar dias utilizando o calendário real com setDate
+        function adicionarDias(dataBase, dias) {
+            const novaData = new Date(dataBase.getTime());
+            novaData.setDate(novaData.getDate() + dias);
+            return novaData;
+        }
+
+        // Atualização principal de dados e cálculos
+        function atualizarSistema() {
+            const agora = new Date();
+            
+            // Data atual do dispositivo
+            dataHojeEl.textContent = formatarData(agora);
+
+            // Cálculos dos vencimentos
+            venc21El.textContent = formatarData(adicionarDias(agora, 21));
+            venc30El.textContent = formatarData(adicionarDias(agora, 30));
+            venc15El.textContent = formatarData(adicionarDias(agora, 15));
+            venc11El.textContent = formatarData(adicionarDias(agora, 11));
+
+            // Horário da última atualização (HH:MM:SS)
+            const horas = String(agora.getHours()).padStart(2, '0');
+            const minutos = String(agora.getMinutes()).padStart(2, '0');
+            const segundos = String(agora.getSeconds()).padStart(2, '0');
+            ultimaAtualizacaoEl.textContent = `Última atualização: ${horas}:${minutos}:${segundos}`;
+        }
+
+        // Botão de Tela Cheia
+        btnFullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log("Erro ao tentar entrar em tela cheia:", err);
+                    });
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        // Inicialização
+        carregarLote();
+        atualizarSistema();
+
+        // Verificação automática a cada 1 segundo para garantir precisão e atualização na virada do dia
+        setInterval(atualizarSistema, 1000);
+    </script>
+</body>
+</html>
