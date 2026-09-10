@@ -131,7 +131,6 @@
             margin-bottom: 12px;
         }
 
-        /* Lote Card Specifics */
         .lote-display-area {
             display: flex;
             align-items: center;
@@ -179,7 +178,6 @@
             transform: scale(0.97);
         }
 
-        /* Input mode for editing lote */
         .lote-input-area {
             display: none;
             gap: 12px;
@@ -200,7 +198,6 @@
             text-transform: uppercase;
         }
 
-        /* Date Reference Card */
         .date-box {
             font-size: 2.5rem;
             font-weight: 800;
@@ -210,7 +207,6 @@
             letter-spacing: 1px;
         }
 
-        /* Vencimentos Section */
         .section-header {
             font-size: 1.2rem;
             font-weight: 800;
@@ -298,7 +294,6 @@
             letter-spacing: 1px;
         }
 
-        /* Footer Status */
         footer {
             background-color: var(--branco);
             border-top: 1px solid #E0E0E0;
@@ -346,9 +341,7 @@
     </header>
 
     <main>
-        <!-- Top Info: Lote & Data Atual -->
         <div class="top-grid">
-            <!-- Card Lote -->
             <section class="card">
                 <div class="card-title">Lote</div>
                 <div id="loteDisplayArea" class="lote-display-area">
@@ -361,18 +354,15 @@
                 </div>
             </section>
 
-            <!-- Card Data de Referência -->
             <section class="card">
                 <div class="card-title">Data de Referência (Hoje)</div>
                 <div id="dataHoje" class="date-box">--/--/----</div>
             </section>
         </div>
 
-        <!-- Seção de Vencimentos -->
         <div class="section-header">Vencimentos</div>
 
         <div class="vencimentos-grid">
-            <!-- 21 Dias -->
             <div class="vencimento-card">
                 <div class="vencimento-header">
                     <span class="vencimento-dias">21 DIAS</span>
@@ -381,7 +371,6 @@
                 <div id="venc21" class="vencimento-data">--/--/----</div>
             </div>
 
-            <!-- 30 Dias -->
             <div class="vencimento-card">
                 <div class="vencimento-header">
                     <span class="vencimento-dias">30 DIAS</span>
@@ -390,7 +379,6 @@
                 <div id="venc30" class="vencimento-data">--/--/----</div>
             </div>
 
-            <!-- 15 Dias -->
             <div class="vencimento-card">
                 <div class="vencimento-header">
                     <span class="vencimento-dias">15 DIAS</span>
@@ -399,7 +387,6 @@
                 <div id="venc15" class="vencimento-data">--/--/----</div>
             </div>
 
-            <!-- 11 Dias -->
             <div class="vencimento-card">
                 <div class="vencimento-header">
                     <span class="vencimento-dias">11 DIAS</span>
@@ -420,7 +407,6 @@
     </footer>
 
     <script>
-        // Elementos DOM
         const loteValue = document.getElementById('loteValue');
         const loteDisplayArea = document.getElementById('loteDisplayArea');
         const loteInputArea = document.getElementById('loteInputArea');
@@ -436,10 +422,8 @@
         const ultimaAtualizacaoEl = document.getElementById('ultimaAtualizacao');
         const btnFullscreen = document.getElementById('btnFullscreen');
 
-        // Chave do localStorage
         const STORAGE_KEY = 'controle_lote_numero';
 
-        // Carregar lote salvo
         function carregarLote() {
             const loteSalvo = localStorage.getItem(STORAGE_KEY);
             if (loteSalvo && loteSalvo.trim() !== '') {
@@ -449,7 +433,6 @@
             }
         }
 
-        // Alternar para modo de edição
         btnAlterar.addEventListener('click', () => {
             const atual = loteValue.textContent;
             loteInput.value = atual === '000' ? '' : atual;
@@ -459,7 +442,6 @@
             loteInput.select();
         });
 
-        // Salvar lote
         function salvarLote() {
             let novoLote = loteInput.value.trim();
             if (novoLote === '') {
@@ -479,7 +461,6 @@
             }
         });
 
-        // Formatação de data para o padrão brasileiro DD/MM/AAAA
         function formatarData(data) {
             const dia = String(data.getDate()).padStart(2, '0');
             const mes = String(data.getMonth() + 1).padStart(2, '0');
@@ -487,34 +468,28 @@
             return `${dia}/${mes}/${ano}`;
         }
 
-        // Adicionar dias utilizando o calendário real com setDate
         function adicionarDias(dataBase, dias) {
             const novaData = new Date(dataBase.getTime());
             novaData.setDate(novaData.getDate() + dias);
             return novaData;
         }
 
-        // Atualização principal de dados e cálculos
         function atualizarSistema() {
             const agora = new Date();
             
-            // Data atual do dispositivo
             dataHojeEl.textContent = formatarData(agora);
 
-            // Cálculos dos vencimentos
             venc21El.textContent = formatarData(adicionarDias(agora, 21));
             venc30El.textContent = formatarData(adicionarDias(agora, 30));
             venc15El.textContent = formatarData(adicionarDias(agora, 15));
             venc11El.textContent = formatarData(adicionarDias(agora, 11));
 
-            // Horário da última atualização (HH:MM:SS)
             const horas = String(agora.getHours()).padStart(2, '0');
             const minutos = String(agora.getMinutes()).padStart(2, '0');
             const segundos = String(agora.getSeconds()).padStart(2, '0');
             ultimaAtualizacaoEl.textContent = `Última atualização: ${horas}:${minutos}:${segundos}`;
         }
 
-        // Botão de Tela Cheia
         btnFullscreen.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 if (document.documentElement.requestFullscreen) {
@@ -529,11 +504,9 @@
             }
         });
 
-        // Inicialização
         carregarLote();
         atualizarSistema();
 
-        // Verificação automática a cada 1 segundo para garantir precisão e atualização na virada do dia
         setInterval(atualizarSistema, 1000);
     </script>
 </body>
